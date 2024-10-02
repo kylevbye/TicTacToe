@@ -17,6 +17,10 @@ public class Player {
         return score;
     }
 
+    public void addPlayerScore() {
+        this.score++;
+    }
+
     public void makeMove(Square square) {
         if (square.getIsOccupied()) {
             System.out.println("Cannot place in this square!");
