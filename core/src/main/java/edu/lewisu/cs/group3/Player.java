@@ -1,6 +1,7 @@
 package edu.lewisu.cs.group3;
 
 public class Player {
+    // Type is either X or O
     private final String type;
     private int score;
 
