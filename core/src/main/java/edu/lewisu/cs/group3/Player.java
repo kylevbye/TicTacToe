@@ -23,10 +23,11 @@ public class Player {
     }
 
     public void makeMove(Square square) {
-        if (square.getIsOccupied()) {
-            System.out.println("Cannot place in this square!");
+        String squareOccupiedBy = square.getIsOccupiedBy();
+        if (squareOccupiedBy == null || squareOccupiedBy.isEmpty()) {
+            square.setIsOccupiedBy(type);
         } else {
-            square.setIsOccupied(true);
+            System.out.println("Cannot place in this square!");
         }
     }
 }
