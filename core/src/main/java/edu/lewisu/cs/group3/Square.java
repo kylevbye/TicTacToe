@@ -2,13 +2,12 @@ package edu.lewisu.cs.group3;
 
 public class Square {
     private final int rowNum, colNum;
-    // Is Occuped By can either be X, O, or empty string
-    private String isOccupiedBy;
+    private PlayerType isOccupiedBy;
 
     public Square(int rowNum, int colNum) {
         this.rowNum = rowNum;
         this.colNum = colNum;
-        this.isOccupiedBy = "";
+        this.isOccupiedBy = PlayerType.NULL;
     }
 
     public int getRowCoordinate() {
@@ -19,11 +18,11 @@ public class Square {
         return colNum;
     }
 
-    public String getIsOccupiedBy() {
+    public PlayerType getIsOccupiedBy() {
         return isOccupiedBy;
     }
 
-    public void setIsOccupiedBy(String xo) {
-        this.isOccupiedBy = xo;
+    public void setIsOccupiedBy(PlayerType playerType) {
+        this.isOccupiedBy = playerType;
     }
 }

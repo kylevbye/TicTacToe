@@ -2,15 +2,15 @@ package edu.lewisu.cs.group3;
 
 public class Player {
     // Type is either X or O
-    private final String type;
+    private final PlayerType type;
     private int score;
 
-    public Player(String type) {
+    public Player(PlayerType type) {
         this.type = type;
         this.score = 0;
     }
 
-    public String getPlayerType() {
+    public PlayerType getPlayerType() {
         return type;
     }
 
@@ -22,9 +22,14 @@ public class Player {
         this.score++;
     }
 
+    /**
+     * Places X or O in the desired square
+     * 
+     * @param square The square that the player wishes to occupy
+     */
     public void makeMove(Square square) {
-        String squareOccupiedBy = square.getIsOccupiedBy();
-        if (squareOccupiedBy == null || squareOccupiedBy.isEmpty()) {
+        PlayerType squareOccupiedBy = square.getIsOccupiedBy();
+        if (squareOccupiedBy != PlayerType.NULL) {
             square.setIsOccupiedBy(type);
         } else {
             System.out.println("Cannot place in this square!");
