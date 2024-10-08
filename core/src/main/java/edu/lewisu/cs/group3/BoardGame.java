@@ -1,5 +1,6 @@
 package edu.lewisu.cs.group3;
 
+// Board game class will serve as a facade
 public class BoardGame {
     private final Player playerX, playerO;
     private final Square[] squares;
