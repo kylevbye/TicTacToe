@@ -22,6 +22,11 @@ public class Player {
         this.score++;
     }
 
+    /**
+     * Places X or O in the desired square
+     * 
+     * @param square The square that the player wishes to occupy
+     */
     public void makeMove(Square square) {
         PlayerType squareOccupiedBy = square.getIsOccupiedBy();
         if (squareOccupiedBy != PlayerType.NULL) {

@@ -41,6 +41,11 @@ public class BoardGame {
         return identifiedSquare;
     }
 
+    /**
+     * Checks both / and \ diagonals for win conditions
+     * 
+     * @param rowOrCol Determine whether to check rows or columns
+     */
     private void checkLinearWinCondition(RowOrCol rowOrCol) {
         int playerXCount = 0, playerOCount = 0;
         for (int i = 1; i <= 3; i++) {
@@ -74,6 +79,11 @@ public class BoardGame {
         }
     }
 
+    /**
+     * Checks both / and \ diagonals for win conditions
+     * 
+     * @param posOrNegDiagonal Determine which diagonal to check
+     */
     private void checkDiagonalWinCondition(PosOrNegDiagonal posOrNegDiagonal) {
         int playerXCount = 0, playerOCount = 0;
         for (int row = 1; row <= 3; row++) {
@@ -102,10 +112,22 @@ public class BoardGame {
         }
     }
 
+    /**
+     * Checks the entire board for a three in a row
+     */
     public void checkWinCondition() {
         checkLinearWinCondition(RowOrCol.ROW);
         checkLinearWinCondition(RowOrCol.COL);
         checkDiagonalWinCondition(PosOrNegDiagonal.POS);
         checkDiagonalWinCondition(PosOrNegDiagonal.NEG);
+    }
+
+    /**
+     * Reset all the squares to be empty
+     */
+    public void restartGame() {
+        for (Square square : squares) {
+            square.setIsOccupiedBy(PlayerType.NULL);
+        }
     }
 }

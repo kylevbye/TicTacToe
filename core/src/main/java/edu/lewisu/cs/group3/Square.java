@@ -2,7 +2,6 @@ package edu.lewisu.cs.group3;
 
 public class Square {
     private final int rowNum, colNum;
-    // Is Occuped By can either be X, O, or empty string
     private PlayerType isOccupiedBy;
 
     public Square(int rowNum, int colNum) {
