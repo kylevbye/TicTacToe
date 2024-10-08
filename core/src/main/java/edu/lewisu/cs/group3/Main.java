@@ -14,7 +14,10 @@ import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 
-/** {@link com.badlogic.gdx.ApplicationListener} implementation shared by all platforms. */
+/**
+ * {@link com.badlogic.gdx.ApplicationListener} implementation shared by all
+ * platforms.
+ */
 public class Main extends ApplicationAdapter {
 
     private SpriteBatch batch;
@@ -27,7 +30,7 @@ public class Main extends ApplicationAdapter {
         batch = new SpriteBatch();
         camera = new OrthographicCamera(640, 480);
         viewport = new FitViewport(640, 480, camera);
-        image = new ScreenObject(new Texture("TicTacToeBoard.png"), 640*0.5f, 480*0.5f, 0, 0, 1.35f, 1.35f, 0);
+        image = new ScreenObject(new Texture("TicTacToeBoard.png"), 640 * 0.5f, 480 * 0.5f, 0, 0, 1.35f, 1.35f, 0);
         image.setCentered(true);
     }
 
@@ -46,9 +49,7 @@ public class Main extends ApplicationAdapter {
 
     private void logic() {
         // WIP
-
-        // Process game logic... something something...
-        // here
+        BoardGame boardGame = new BoardGame();
     }
 
     private void draw() {
@@ -70,5 +71,5 @@ public class Main extends ApplicationAdapter {
     public void resize(int width, int height) {
         viewport.update(width, height, true);
     }
-    
+
 }
