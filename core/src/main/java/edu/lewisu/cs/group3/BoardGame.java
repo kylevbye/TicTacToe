@@ -2,13 +2,15 @@ package edu.lewisu.cs.group3;
 
 // Board game class will serve as a facade
 public class BoardGame {
-    private final Player playerX, playerO;
+    private final Player[] players;
     private final Square[] squares;
 
     public BoardGame() {
         // Initialize players
-        playerX = new Player(PlayerType.X);
-        playerO = new Player(PlayerType.O);
+        players = new Player[2];
+
+        players[0] = new Player(PlayerType.X);
+        players[1] = new Player(PlayerType.O);
 
         // Initialize squares
         squares = new Square[9];
@@ -20,12 +22,15 @@ public class BoardGame {
         }
     }
 
-    public Player getPlayerX() {
-        return playerX;
-    }
-
-    public Player getPlayerO() {
-        return playerO;
+    public Player getPlayer(PlayerType playerType) {
+        Player selectedPlayer = new Player(PlayerType.NULL);
+        for (Player player : players) {
+            if (player.getPlayerType() == playerType) {
+                selectedPlayer = player;
+                break;
+            }
+        }
+        return selectedPlayer;
     }
 
     public Square getSquare(int row, int column) {
@@ -45,81 +50,64 @@ public class BoardGame {
      * Checks both / and \ diagonals for win conditions
      * 
      * @param rowOrCol Determine whether to check rows or columns
+     * @param player   The player to check the win condition for
      */
-    private void checkLinearWinCondition(RowOrCol rowOrCol) {
-        int playerXCount = 0, playerOCount = 0;
+    private void checkLinearWinCondition(RowOrCol rowOrCol, Player player) {
+        int playerMarkCount = 0;
         for (int i = 1; i <= 3; i++) {
-            if (playerXCount >= 3 || playerOCount >= 3) {
+            if (playerMarkCount >= 3) {
                 break;
             }
             for (int j = 1; j <= 3; j++) {
                 Square square = rowOrCol == RowOrCol.COL ? getSquare(j, i) : getSquare(i, j);
-                PlayerType isOccupiedBy = square.getIsOccupiedBy();
-                switch (isOccupiedBy) {
-                    case X:
-                        playerXCount++;
-                        if (playerXCount >= 3) {
-                            System.out.println("X Wins");
-                            playerX.addPlayerScore();
-                            break;
-                        }
-                        continue;
-                    case O:
-                        playerOCount++;
-                        if (playerOCount >= 3) {
-                            System.out.println("O Wins");
-                            playerO.addPlayerScore();
-                            break;
-                        }
-                        continue;
-                    default:
-                        continue;
+                PlayerType isOccupiedBy = square.getIsOccupiedBy(), playerType = player.getPlayerType();
+
+                if (isOccupiedBy == playerType) {
+                    playerMarkCount++;
+                    if (playerMarkCount >= 3) {
+                        System.out.printf("Player %s wins!", playerType.name());
+                        player.addPlayerScore();
+                        break;
+                    }
                 }
             }
         }
     }
 
     /**
-     * Checks both / and \ diagonals for win conditions
+     * Checks both / or \ diagonals for win conditions
      * 
-     * @param posOrNegDiagonal Determine which diagonal to check
+     * @param posOrNegDiagonal Determine which diagonal to check. Positive diagonal
+     *                         is /, negative diagonal is \
+     * @param player           The player to check the win condition for
      */
-    private void checkDiagonalWinCondition(PosOrNegDiagonal posOrNegDiagonal) {
-        int playerXCount = 0, playerOCount = 0;
+    private void checkDiagonalWinCondition(PosOrNegDiagonal posOrNegDiagonal, Player player) {
+        int playerMarkCount = 0;
         for (int row = 1; row <= 3; row++) {
             Square square = getSquare(row, posOrNegDiagonal == PosOrNegDiagonal.POS ? 4 - row : row);
-            PlayerType isOccupiedBy = square.getIsOccupiedBy();
-            switch (isOccupiedBy) {
-                case X:
-                    playerXCount++;
-                    if (playerXCount >= 3) {
-                        System.out.println("X Wins");
-                        playerX.addPlayerScore();
-                        break;
-                    }
-                    continue;
-                case O:
-                    playerOCount++;
-                    if (playerOCount >= 3) {
-                        System.out.println("O Wins");
-                        playerO.addPlayerScore();
-                        break;
-                    }
-                    continue;
-                default:
-                    continue;
+            PlayerType isOccupiedBy = square.getIsOccupiedBy(), playerType = player.getPlayerType();
+
+            if (isOccupiedBy == playerType) {
+                playerMarkCount++;
+                if (playerMarkCount >= 3) {
+                    System.out.printf("Player %s wins!", playerType.name());
+                    player.addPlayerScore();
+                    break;
+                }
             }
         }
     }
 
     /**
      * Checks the entire board for a three in a row
+     * 
+     * @param player The player to check the win condition for
      */
-    public void checkWinCondition() {
-        checkLinearWinCondition(RowOrCol.ROW);
-        checkLinearWinCondition(RowOrCol.COL);
-        checkDiagonalWinCondition(PosOrNegDiagonal.POS);
-        checkDiagonalWinCondition(PosOrNegDiagonal.NEG);
+    public void checkWinCondition(Player player) {
+        checkLinearWinCondition(RowOrCol.ROW, player);
+        checkLinearWinCondition(RowOrCol.COL, player);
+        checkDiagonalWinCondition(PosOrNegDiagonal.POS, player);
+        checkDiagonalWinCondition(PosOrNegDiagonal.NEG, player);
     }
 
     /**
