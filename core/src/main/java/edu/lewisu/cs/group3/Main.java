@@ -7,7 +7,10 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.scenes.scene2d.ui.Label;
+import com.badlogic.gdx.scenes.scene2d.ui.Label.LabelStyle;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.badlogic.gdx.utils.viewport.ExtendViewport;
 import com.badlogic.gdx.utils.viewport.FitViewport;
@@ -24,14 +27,19 @@ public class Main extends ApplicationAdapter {
     private ScreenObject image;
     private Viewport viewport;
     private Camera camera;
+    private Label xLabel, oLabel;
 
     @Override
     public void create() {
         batch = new SpriteBatch();
         camera = new OrthographicCamera(640, 480);
         viewport = new FitViewport(640, 480, camera);
-        image = new ScreenObject(new Texture("TicTacToeBoard.png"), 640 * 0.5f, 480 * 0.5f, 0, 0, 1.35f, 1.35f, 0);
+        image = new ScreenObject(new Texture("TicTacToeBoard.png"), 640 * 0.5f, 480 * 0.5f, 0, 0, 1.1f, 1.1f, 0);
         image.setCentered(true);
+        xLabel = new Label("X: ", new LabelStyle(new BitmapFont(Gdx.files.internal("undertale.fnt")), Color.WHITE));
+        xLabel.setPosition(30,420);
+        oLabel = new Label("O: ", new LabelStyle(new BitmapFont(Gdx.files.internal("undertale.fnt")), Color.WHITE));
+        oLabel.setPosition(30,380);
     }
 
     @Override
@@ -58,6 +66,8 @@ public class Main extends ApplicationAdapter {
         batch.setProjectionMatrix(viewport.getCamera().combined);
         batch.begin();
         image.draw(batch, 1.0f);
+        xLabel.draw(batch, 1.0f);
+        oLabel.draw(batch, 1.0f);
         batch.end();
     }
 
