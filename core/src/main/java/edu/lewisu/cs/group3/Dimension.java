@@ -1,5 +1,10 @@
 package edu.lewisu.cs.group3;
 
+/**
+ * Represents a position in terms of x, y, origin point
+ * scale, width, height, and rotation.
+ * @author Kyle Bye
+ */
 public class Dimension {
     
     protected float x, y;
