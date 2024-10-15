@@ -4,86 +4,91 @@ import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.Cursor.SystemCursor;
 import com.badlogic.gdx.graphics.OrthographicCamera;
-import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
-import com.badlogic.gdx.scenes.scene2d.ui.Label.LabelStyle;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 
 /**
+ * Runs Tic-Tac-Toe Game
+ * 
  * {@link com.badlogic.gdx.ApplicationListener} implementation shared by all
  * platforms.
+ * @author Kyle Bye
+ * @author Kevin Nguyen
+ * @author Giridhar Kumar Jogi
  */
 public class Main extends ApplicationAdapter {
 
-    private final int WIDTH = 640;
-    private final int HEIGHT = 480;
+    private static final int WIDTH = 640;
+    private static final int HEIGHT = 480;
 
     private SpriteBatch batch;
     private Viewport viewport;
     private Camera camera;
     private MouseInputHandler mouseHandler;
-
-    // Refactor this later
-    private Label xLabel, oLabel;
-    private Label dMouseCoords, dMouseClickPos;
-    private ScreenObject image;
-
+    
+    // Models
+    private GameState gameState;
+    private BoardGame boardGame;
+    
+    // Views
+    private BoardGameView boardGameView;
+    private ScoreBoardView scoreBoardView;
+    
+    /**
+     * Initializes the game models, game views, and LibGDX
+     * attributes needed to run Tic-Tac-Toe
+     */
     @Override
     public void create() {
-
+        
+        // Initialize LibGDX Standard parameters
         Gdx.graphics.setWindowedMode(WIDTH, HEIGHT);
         batch = new SpriteBatch();
         camera = new OrthographicCamera(WIDTH, HEIGHT);
         viewport = new FitViewport(WIDTH, HEIGHT, camera);
-        mouseHandler = new MouseInputHandler();
+        mouseHandler = new MouseInputHandler(camera);
         Gdx.input.setInputProcessor(mouseHandler);
+        
+        // Create Models
+        boardGame = new BoardGame();
+        gameState = new GameState(boardGame);
+        gameState.startGame();
 
-        // Refactor Later
-        image = new ScreenObject(new Texture("TicTacToeBoard.png"), 640 * 0.5f, 480 * 0.5f, 0, 0, 1.1f, 1.1f, 0);
-        image.setCentered(true);
-        xLabel = new Label("X: ", new LabelStyle(new BitmapFont(Gdx.files.internal("undertale.fnt")), Color.WHITE));
-        xLabel.setPosition(30,420);
-        oLabel = new Label("O: ", new LabelStyle(new BitmapFont(Gdx.files.internal("undertale.fnt")), Color.WHITE));
-        oLabel.setPosition(30,380);
-
-        // For Debug Purposes. Should delete/move later.
-        dMouseCoords = new Label("MPos:()", new LabelStyle(new BitmapFont(Gdx.files.internal("undertale.fnt")), Color.WHITE));
-        dMouseCoords.setPosition(30,10);
-        dMouseClickPos = new Label("MLCPos:()", new LabelStyle(new BitmapFont(Gdx.files.internal("undertale.fnt")), Color.WHITE));
-        dMouseClickPos.setPosition(30,40);
+        // Setup Factories
+        ScreenObjectFactory sFactory = new ScreenObjectFactory(); 
+        SquareLabelFactory slFactory = new SquareLabelFactory();
+        LabelFactory lFactory = new LabelFactory();
+        
+        // Create BoardGameView
+        Square[] squares = boardGame.getSquares();
+        Label turnLabel = lFactory.createLabel("_'s Turn!");
+        ScreenObject bgScreenObject = sFactory.createBoardGameObject();
+        SquareLabel[] squareLabels = new SquareLabel[squares.length];
+        for (int i = 0; i<squares.length; ++i) {
+            squareLabels[i] = slFactory.createSquareLabel(squares[i]);
+        }
+        boardGameView = new BoardGameView(bgScreenObject, turnLabel, squareLabels);
+        
+        // Create ScoreBoardView
+        scoreBoardView = new ScoreBoardView(
+                lFactory.createLabel("X: 0"), lFactory.createLabel("X: 0"),
+                lFactory.createLabel("_ won!"), boardGame.getPlayers()
+        );
     }
 
     /**
-     * This function represents the game loop. 
+     * This function represents the game loop. Input is
+     * handled by LibGDX before this function is called.
      */
     @Override
     public void render() {
-        input(); // Might remove this
         logic();
         draw();
-        mouseHandler.resetClickedState();
-    }
-
-    /**
-     * Processes mouse input and updates the coordinates
-     * of the mouse's x and y.
-     * 
-     * I might delete this later because the mouse events
-     * are called before render() is even called. This kinda
-     * defeats the purpose of this function :/
-     */
-    private void input() {
-        // WIP
-        dMouseCoords.setText(String.format("MPos:(%d, %d)", mouseHandler.getMouseX(), mouseHandler.getMouseY()));
-
-        Vector2 leftMouse = mouseHandler.getLeftClickPosition();
-        dMouseClickPos.setText(String.format("MCPos:(%.0f, %.0f)", leftMouse.x, leftMouse.y));
     }
 
     /**
@@ -92,8 +97,20 @@ public class Main extends ApplicationAdapter {
      */
     private void logic() {
         // WIP
-        BoardGame boardGame = new BoardGame();
-
+        Gdx.graphics.setSystemCursor(SystemCursor.Arrow);
+        
+        // Get Row & Col based on Mouse Position
+        // 0 on either means that no square is being hovered
+        IntPair squareCoords = boardGameView.checkMousePositionOnBoard(mouseHandler);
+        gameState.update(squareCoords, mouseHandler.leftClicked());
+        scoreBoardView.getWonLabel().setVisible(false);
+        if (!gameState.isActive() ) {
+            scoreBoardView.setWinText(gameState.getWinner());
+            scoreBoardView.getWonLabel().setVisible(true);
+        }
+        scoreBoardView.update();
+        boardGameView.update(gameState.getTurn());
+        mouseHandler.resetClickedState();
     }
 
     /**
@@ -101,25 +118,40 @@ public class Main extends ApplicationAdapter {
      * by drawing all the assets to the screen.
      */
     private void draw() {
-        // Gonna refactor this out next week
         ScreenUtils.clear(Color.BLACK);
         viewport.getCamera().update();
         batch.setProjectionMatrix(viewport.getCamera().combined);
         batch.begin();
-        image.draw(batch, 1.0f);
-        xLabel.draw(batch, 1.0f);
-        oLabel.draw(batch, 1.0f);
-        dMouseCoords.draw(batch, 1.0f);
-        dMouseClickPos.draw(batch, 1.0f);
+        
+        // Fade out game board if
+        // there is no active game
+        float boardOpacity = 1.0f;
+        if (!gameState.isActive()) {
+            boardOpacity = 0.1f;
+        }
+        boardGameView.draw(batch, boardOpacity);
+        
+        scoreBoardView.draw(batch, 1.0f);
         batch.end();
     }
-
+    
+    /**
+     * Called when closing application. Releases textures
+     * held in factory classes.
+     */
     @Override
     public void dispose() {
         batch.dispose();
-        image.dispose();
+        ScreenObjectFactory.disposeTextures();
+        LabelFactory.disposeFonts();
     }
-
+    
+    /**
+     * Ensures the game scales properly during
+     * resizing operation.
+     * @param width width to scale to
+     * @param height height to scale to
+     */
     @Override
     public void resize(int width, int height) {
         viewport.update(width, height, true);

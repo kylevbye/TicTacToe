@@ -14,9 +14,9 @@ public interface Drawable {
 	/**
 	 * Draw onto the provided batch with a provided parentAlpha.
 	 * 
-	 * @param	batchIn	batch to draw the object on
+	 * @param	batch	batch to draw the object on
 	 * @param	parentAlpha	alpha to draw at
 	 */
-	public void draw(Batch batchIn, float parentAlpha);
+	public void draw(Batch batch, float parentAlpha);
 	
 }
