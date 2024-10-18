@@ -108,6 +108,9 @@ public class GameState {
         // Invalid square
         if (sq == null) return false;
         
+        // Check occupied
+        if (sq.getIsOccupiedBy() != PlayerType.NULL) return false;
+        
         // Valid empty square, have turning player take ownership
         // if mouse is clicked.
         if (sq.getIsOccupiedBy() == PlayerType.NULL && mouseClicked) {
