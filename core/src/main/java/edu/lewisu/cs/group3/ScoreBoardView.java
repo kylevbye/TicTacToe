@@ -9,7 +9,10 @@ import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 
 /**
- *
+ * The Graphical View model of the scoreboard that contains
+ * labels for displaying X's score, O's score, and who had
+ * just won.
+ * 
  * @author Kyle Bye
  */
 public class ScoreBoardView implements Drawable {
@@ -29,6 +32,13 @@ public class ScoreBoardView implements Drawable {
     public Label getWonLabel() { return wonLabel; }
     public Player[] getPlayers() { return players; }
     
+    /**
+     * Based on what's given, this will set the win text label
+     * to display who had just won the round. If null is given,
+     * then it is assumed that no one won.
+     * 
+     * @param player player who won or null (no one won) 
+     */
     public void setWinText(Player player) {
         if (player != null) {
             String winFormat = "%s won!";
@@ -37,6 +47,9 @@ public class ScoreBoardView implements Drawable {
         else wonLabel.setText("No one wins!");
     }
     
+    /**
+     * Updates the score labels
+     */
     public void update() {
         
         String scoreFormat = "%s:%d";
@@ -48,6 +61,14 @@ public class ScoreBoardView implements Drawable {
         );
     }
 
+    /**
+     * Draws the labels to the batch.
+     * 
+     * Won label is only drawn if it is visible.
+     * 
+     * @param batch batch to draw on
+     * @param parentAlpha opacity
+     */
     @Override
     public void draw(Batch batch, float parentAlpha) {
         xScoreLabel.draw(batch, parentAlpha);
@@ -55,6 +76,15 @@ public class ScoreBoardView implements Drawable {
         if (wonLabel.isVisible()) wonLabel.draw(batch, parentAlpha);
     }
     
+    /**
+     * Initializes the view with the provided labels and players
+     * to figure out who is x and who is o.
+     * 
+     * @param xScoreLabel player x's score
+     * @param oScoreLabel player o's score
+     * @param wonLabel displays who won 
+     * @param players playing players
+     */
     public ScoreBoardView(Label xScoreLabel, Label oScoreLabel, Label wonLabel, Player[] players) {
         setXScoreLabel(xScoreLabel);
         setOScoreLabel(oScoreLabel);
@@ -63,6 +93,10 @@ public class ScoreBoardView implements Drawable {
         positionLabels();
     }
     
+    /**
+     * Positions score labels to the top left
+     * and positions the won label to the top middle.
+     */
     private void positionLabels() {
         xScoreLabel.setPosition(30,420);
         oScoreLabel.setPosition(30,380);
